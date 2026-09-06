@@ -2,11 +2,8 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Home, ListMusic, Search, UserRound, LogOut } from 'lucide-react';
+import { Home, ListMusic, Search, UserRound, LogOut, X } from 'lucide-react';
 import { useMusicStore } from '@/lib/store/useMusicStore';
-import { useState } from 'react';
-import { useDebounce } from '@/lib/hooks/useDebounce';
-import AdvancedSearchPanel from '@/components/AdvancedSearchPanel';
 import { logoutFromZitadel } from '@/lib/auth/zitadelAuth';
 
 export default function Header() {
@@ -14,16 +11,11 @@ export default function Header() {
   const { 
     searchQuery, 
     setSearchQuery, 
-    selectedGenre, 
-    selectedArtist, 
-    selectedAlbum, 
     authUser, 
     setAuthUser,
     setPlaylists,
     clearRecentlyPlayed
   } = useMusicStore();
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const debouncedQuery = useDebounce(searchQuery, 500);
 
   const applySearch = (value: string) => {
     setSearchQuery(value);
@@ -58,22 +50,27 @@ export default function Header() {
         </nav>
 
         <div className='flex items-center gap-3'>
+          {/* Main Search Bar (Elasticsearch Powered) */}
           <div className='relative hidden md:block'>
-            <Search size={16} className='absolute left-4 top-1/2 -translate-y-1/2 text-soft' />
+            <Search size={16} className='absolute left-4 top-1/2 -translate-y-1/2 text-soft pointer-events-none' />
             <input
-              className='w-[280px] lg:w-[320px] rounded-full border border-white/10 bg-[#202633] pl-11 pr-4 py-2 text-sm outline-none focus:border-lime-300/80'
-              placeholder='Search songs, artists...'
+              className='w-[320px] lg:w-[400px] rounded-full border border-white/10 bg-[#202633] pl-11 pr-9 py-2 text-sm outline-none focus:border-lime-300/80 text-white placeholder:text-slate-400 transition-all'
+              placeholder='Search songs, artists, albums, genres...'
               value={searchQuery}
               onChange={(event) => applySearch(event.target.value)}
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className='absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors p-0.5 rounded-full hover:bg-white/10'
+                title='Clear search'
+              >
+                <X size={14} />
+              </button>
+            )}
           </div>
 
-          <button className='rounded-full border border-white/10 px-4 py-2 text-xs text-soft hover:text-white hover:bg-white/8 transition'
-            onClick={() => setShowAdvanced(!showAdvanced)}>
-            Advanced
-          </button>
-
-          {/* User Profile - Circle Avatar with Username Below */}
+          {/* User Profile */}
           <div className='hidden md:flex flex-col items-center justify-center px-1'>
             <div className='relative flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-pink-500 via-rose-500 to-amber-400 p-[1.5px] shadow-md shadow-pink-500/25'>
               <div className='flex h-full w-full items-center justify-center rounded-full bg-[#161a23] text-pink-200 font-bold text-xs'>
@@ -98,17 +95,25 @@ export default function Header() {
         </div>
       </div>
 
-      {showAdvanced && (
-        <AdvancedSearchPanel
-          filters={{ genre: selectedGenre, artist: selectedArtist, album: selectedAlbum }}
-          onClose={() => setShowAdvanced(false)}
-        />
-      )}
-
+      {/* Mobile Search Bar */}
       <div className='md:hidden px-4 pb-3'>
         <div className='relative'>
-          <Search size={16} className='absolute left-4 top-1/2 -translate-y-1/2 text-soft' />
-          <input className='w-full rounded-full border border-white/10 bg-[#202633] pl-11 pr-4 py-2 text-sm outline-none focus:border-lime-300/80' value={searchQuery} onChange={(event) => applySearch(event.target.value)} />
+          <Search size={16} className='absolute left-4 top-1/2 -translate-y-1/2 text-soft pointer-events-none' />
+          <input
+            className='w-full rounded-full border border-white/10 bg-[#202633] pl-11 pr-9 py-2 text-sm outline-none focus:border-lime-300/80 text-white placeholder:text-slate-400'
+            placeholder='Search songs, artists, albums, genres...'
+            value={searchQuery}
+            onChange={(event) => applySearch(event.target.value)}
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className='absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-0.5'
+              title='Clear search'
+            >
+              <X size={14} />
+            </button>
+          )}
         </div>
       </div>
     </header>
