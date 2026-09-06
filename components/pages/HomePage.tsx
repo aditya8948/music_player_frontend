@@ -106,10 +106,7 @@ export default function HomePage() {
           setTotalSongs(result.totalSongs);
           setCurrentPage(result.currentPage);
           
-          if (result.songs.length > 0) {
-            // Clean up any stale/deleted songs from recently played
-            cleanRecentlyPlayed(result.songs.map((s: Song) => s.id));
-          }
+// Preserved recently played across pages
         }
       } catch (err) {
         console.error('Error fetching songs:', err);
@@ -280,24 +277,50 @@ export default function HomePage() {
               <span>Prev</span>
             </button>
 
-            {/* Numeric Page Buttons */}
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
-              const isActive = pageNum === currentPage;
-              return (
-                <button
-                  key={`page-${pageNum}`}
-                  onClick={() => handlePageChange(pageNum)}
-                  className={`w-9 h-9 rounded-xl text-xs font-bold transition flex items-center justify-center ${
-                    isActive
-                      ? 'bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 text-white shadow-md shadow-pink-500/30 scale-105'
-                      : 'border border-white/10 bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white'
-                  }`}
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  {pageNum}
-                </button>
-              );
-            })}
+            {/* Numeric Page Buttons (Windowed for large datasets) */}
+            {(() => {
+              const getPages = () => {
+                if (totalPages <= 7) {
+                  return Array.from({ length: totalPages }, (_, i) => i + 1);
+                }
+                if (currentPage <= 4) {
+                  return [1, 2, 3, 4, 5, '...', totalPages];
+                }
+                if (currentPage >= totalPages - 3) {
+                  return [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+                }
+                return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+              };
+
+              return getPages().map((item, idx) => {
+                if (item === '...') {
+                  return (
+                    <span
+                      key={`ellipsis-${idx}`}
+                      className='w-7 text-center text-xs text-slate-500 font-bold select-none'
+                    >
+                      …
+                    </span>
+                  );
+                }
+                const pageNum = Number(item);
+                const isActive = pageNum === currentPage;
+                return (
+                  <button
+                    key={`page-${pageNum}`}
+                    onClick={() => handlePageChange(pageNum)}
+                    className={`w-9 h-9 rounded-xl text-xs font-bold transition flex items-center justify-center ${
+                      isActive
+                        ? 'bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 text-white shadow-md shadow-pink-500/30 scale-105'
+                        : 'border border-white/10 bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white'
+                    }`}
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              });
+            })()}
 
             {/* Next Button */}
             <button
