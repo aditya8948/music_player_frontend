@@ -1,4 +1,33 @@
 import { UserManager, WebStorageStateStore, type User as OidcUser } from 'oidc-client-ts';
+import { sha256 } from 'js-sha256';
+
+// Polyfill window.crypto.subtle for non-secure contexts (e.g. plain HTTP on public IP)
+if (typeof window !== 'undefined') {
+  if (!window.crypto) {
+    (window as any).crypto = {};
+  }
+  if (!window.crypto.subtle) {
+    try {
+      Object.defineProperty(window.crypto, 'subtle', {
+        value: {
+          digest: async (algorithm: any, data: Uint8Array | ArrayBuffer) => {
+            const algoName = typeof algorithm === 'string' ? algorithm : algorithm?.name;
+            if (algoName === 'SHA-256') {
+              return sha256.arrayBuffer(data as any);
+            }
+            throw new Error('Algorithm not supported by polyfill: ' + algoName);
+          }
+        },
+        configurable: true,
+        writable: true
+      });
+      console.log('[ZITADEL Auth] Successfully polyfilled crypto.subtle for HTTP');
+    } catch (e) {
+      console.warn('[ZITADEL Auth] Failed to polyfill crypto.subtle:', e);
+    }
+  }
+}
+
 import { User } from '@/types';
 
 const ZITADEL_ISSUER = process.env.NEXT_PUBLIC_ZITADEL_ISSUER || 'https://musekit-oua2yk.us1.zitadel.cloud';

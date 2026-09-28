@@ -14,6 +14,7 @@
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "autoprefixer": "latest",
+    "js-sha256": "^1.0.0",
     "lucide-react": "latest",
     "next": "latest",
     "oidc-client-ts": "^3.5.0",
