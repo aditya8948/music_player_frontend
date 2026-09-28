@@ -1,6 +1,6 @@
 import { Playlist, SearchFilters, Song, PaginatedSongsResponse } from '@/types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9090';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://13.206.100.166:9090';
 const DEFAULT_FALLBACK_COVER = '/default_cover.jpg';
 
 /**

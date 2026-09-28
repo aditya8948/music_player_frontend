@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9090';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://13.206.100.166:9090';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;

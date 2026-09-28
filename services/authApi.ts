@@ -9,7 +9,7 @@ import {
   clearAuthIntent
 } from '@/lib/auth/zitadelAuth';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9090';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://13.206.100.166:9090';
 
 export interface ApiResponse<T = any> {
   success: boolean;
