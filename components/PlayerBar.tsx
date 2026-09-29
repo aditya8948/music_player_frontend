@@ -11,7 +11,6 @@ import {
   SkipForward, 
   Volume2, 
   VolumeX, 
-  Download,
   RotateCcw,
   RotateCw
 } from 'lucide-react';
@@ -21,7 +20,9 @@ import {
   removeSongFromPlaylist as removeSongFromPlaylistApi, 
   getDownloadUrl, 
   getPlaylists, 
-  safeMediaUrl 
+  safeMediaUrl,
+  resolveAudioTrackUrl,
+  getFallbackAudioUrl
 } from '@/services/musicApi';
 import { Song, Playlist } from '@/types';
 
@@ -79,7 +80,7 @@ export default function PlayerBar() {
     setPlaylists(updated);
   };
 
-  const audioSrc = song ? safeMediaUrl(song.audioUrl, '') : '';
+  const audioSrc = song ? resolveAudioTrackUrl(song.audioUrl, song.id || song.title) : '';
   const coverSrc = song ? safeMediaUrl(song.coverImageUrl) : '';
 
   // Synchronize audio volume
@@ -151,7 +152,7 @@ export default function PlayerBar() {
   if (!song) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-[#11151b]/95 backdrop-blur-xl md:bottom-6 md:left-1/2 md:right-auto md:w-[calc(100%-48px)] md:max-w-[1400px] md:-translate-x-1/2 md:rounded-3xl md:border md:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),inset_0_1px_1px_rgba(255,255,255,0.06)] transition-all duration-300">
+    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-stone-200/90 bg-white/95 backdrop-blur-xl md:bottom-6 md:left-1/2 md:right-auto md:w-[calc(100%-48px)] md:max-w-[1400px] md:-translate-x-1/2 md:rounded-2xl md:border md:shadow-[0_15px_35px_-10px_rgba(40,30,20,0.12),0_0_1px_rgba(0,0,0,0.08)] transition-all duration-300">
       
       {/* Hidden Native Audio Element */}
       <audio
@@ -166,6 +167,15 @@ export default function PlayerBar() {
             setActualDuration(Math.round(e.currentTarget.duration));
           }
         }}
+        onError={() => {
+          if (!song) return;
+          console.warn('Audio stream error, engaging smart audio recovery...');
+          const fallback = getFallbackAudioUrl(song.id || song.title || 'default');
+          if (audioRef.current && audioRef.current.src !== fallback) {
+            audioRef.current.src = fallback;
+            audioRef.current.play().catch(() => {});
+          }
+        }}
         onEnded={nextSong}
       />
 
@@ -173,7 +183,7 @@ export default function PlayerBar() {
 
         {/* Song Info */}
         <div className="flex w-[240px] items-center gap-3">
-          <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl border border-white/10 shadow-lg group">
+          <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl border border-stone-200 shadow-xs group">
             <Image
               src={coverSrc}
               alt={song.title}
@@ -182,13 +192,13 @@ export default function PlayerBar() {
             />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-semibold tracking-wide text-white hover:text-lime-300 transition-colors cursor-pointer">{song.title}</div>
-            <div className="truncate text-xs text-soft mt-0.5">{song.artist}</div>
+            <div className="truncate text-sm font-semibold tracking-wide text-stone-900 hover:text-amber-800 transition-colors cursor-pointer">{song.title}</div>
+            <div className="truncate text-xs text-stone-500 mt-0.5">{song.artist}</div>
           </div>
           <button
             onClick={toggleLike}
-            className={`flex-shrink-0 ml-2 rounded-full p-2 transition-all duration-300 hover:bg-white/5 ${
-              isLiked ? 'text-rose-500 hover:text-rose-400' : 'text-soft hover:text-lime-300'
+            className={`flex-shrink-0 ml-2 rounded-full p-2 transition-all duration-300 hover:bg-stone-100 ${
+              isLiked ? 'text-rose-500 hover:text-rose-400' : 'text-stone-400 hover:text-rose-500'
             }`}
             title={isLiked ? 'Remove from Favorites' : 'Add to Favorites'}
           >
@@ -206,7 +216,7 @@ export default function PlayerBar() {
             {/* Previous Track */}
             <button
               onClick={previousSong}
-              className="text-soft hover:text-white transition-colors duration-200 active:scale-90"
+              className="text-stone-500 hover:text-stone-900 transition-colors duration-200 active:scale-90"
               title="Previous Track"
             >
               <SkipBack size={20} fill="currentColor" className="opacity-80 hover:opacity-100" />
@@ -215,40 +225,40 @@ export default function PlayerBar() {
             {/* Rewind 10 Seconds */}
             <button
               onClick={skipBackward}
-              className="text-soft hover:text-lime-300 transition-colors duration-200 active:scale-90 relative group p-1"
+              className="text-stone-400 hover:text-rose-500 transition-colors duration-200 active:scale-90 relative group p-1"
               title="Rewind 10s"
             >
               <RotateCcw size={18} />
-              <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 text-[9px] font-bold text-soft group-hover:text-lime-300 opacity-0 group-hover:opacity-100 transition-opacity">10s</span>
+              <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 text-[9px] font-bold text-stone-500 group-hover:text-stone-900 opacity-0 group-hover:opacity-100 transition-opacity">10s</span>
             </button>
 
             {/* Play / Pause Toggle Button */}
             <button
               onClick={togglePlay}
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-[#b8ff70] text-slate-950 shadow-[0_0_15px_rgba(184,255,112,0.4)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(184,255,112,0.65)] active:scale-95 cursor-pointer"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-stone-900 text-white shadow-md transition-all duration-200 hover:scale-105 hover:bg-black active:scale-95 cursor-pointer"
               title={isPlaying ? 'Pause' : 'Play'}
             >
               {isPlaying ? (
-                <Pause size={20} className="fill-slate-950 stroke-[2.5]" />
+                <Pause size={20} className="fill-white stroke-[2.5]" />
               ) : (
-                <Play size={20} className="fill-slate-950 stroke-[2.5] ml-0.5" />
+                <Play size={20} className="fill-white stroke-[2.5] ml-0.5" />
               )}
             </button>
 
             {/* Forward 10 Seconds */}
             <button
               onClick={skipForward}
-              className="text-soft hover:text-lime-300 transition-colors duration-200 active:scale-90 relative group p-1"
+              className="text-stone-400 hover:text-rose-500 transition-colors duration-200 active:scale-90 relative group p-1"
               title="Forward 10s"
             >
               <RotateCw size={18} />
-              <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 text-[9px] font-bold text-soft group-hover:text-lime-300 opacity-0 group-hover:opacity-100 transition-opacity">10s</span>
+              <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 text-[9px] font-bold text-stone-500 group-hover:text-stone-900 opacity-0 group-hover:opacity-100 transition-opacity">10s</span>
             </button>
 
             {/* Next Track */}
             <button
               onClick={nextSong}
-              className="text-soft hover:text-white transition-colors duration-200 active:scale-90"
+              className="text-stone-500 hover:text-stone-900 transition-colors duration-200 active:scale-90"
               title="Next Track"
             >
               <SkipForward size={20} fill="currentColor" className="opacity-80 hover:opacity-100" />
@@ -257,7 +267,7 @@ export default function PlayerBar() {
 
           {/* Scrubbable Progress Timeline */}
           <div className="mt-2.5 flex w-full items-center gap-3">
-            <span className="w-10 text-right text-[11px] font-medium font-mono text-soft">
+            <span className="w-10 text-right text-[11px] font-medium font-mono text-stone-500">
               {Math.floor(progress / 60)}:{String(Math.floor(progress % 60)).padStart(2, '0')}
             </span>
             <div className="slider-wrapper flex-1">
@@ -273,31 +283,18 @@ export default function PlayerBar() {
                 title="Seek audio track"
               />
             </div>
-            <span className="w-10 text-left text-[11px] font-medium font-mono text-soft">
+            <span className="w-10 text-left text-[11px] font-medium font-mono text-stone-500">
               {Math.floor(duration / 60)}:{String(Math.floor(duration % 60)).padStart(2, '0')}
             </span>
           </div>
         </div>
 
-        {/* Volume & Queue Settings & Download */}
+        {/* Volume Controls */}
         <div className="hidden md:flex items-center gap-3 w-[240px] justify-end">
-          <a
-            href={getDownloadUrl(song.id)}
-            target="_blank"
-            rel="noopener noreferrer"
-            download
-            className="text-soft hover:text-white transition-colors duration-200 p-2 rounded-full hover:bg-white/5"
-            title="Download Audio"
-          >
-            <Download size={18} />
-          </a>
-          <button className="text-soft hover:text-white transition-colors duration-200 p-2 rounded-full hover:bg-white/5">
-            <ListMusic size={18} />
-          </button>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={() => setVolume(volume === 0 ? 70 : 0)}
-              className="text-soft hover:text-white transition-colors duration-200"
+              className="text-stone-500 hover:text-stone-900 transition-colors duration-200"
               title={volume === 0 ? 'Unmute' : 'Mute'}
             >
               {volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
@@ -331,14 +328,14 @@ export default function PlayerBar() {
           width: 100%;
           height: 4px;
           border-radius: 9999px;
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(0, 0, 0, 0.08);
           outline: none;
           cursor: pointer;
           transition: height 0.12s ease;
           background-image: linear-gradient(
             to right,
-            #b8ff70 var(--progress, 0%),
-            rgba(255, 255, 255, 0.1) var(--progress, 0%)
+            #1c1917 var(--progress, 0%),
+            rgba(0, 0, 0, 0.08) var(--progress, 0%)
           );
         }
 
@@ -357,8 +354,8 @@ export default function PlayerBar() {
           width: 12px;
           height: 12px;
           border-radius: 50%;
-          background: #ffffff;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+          background: #1c1917;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
           margin-top: -4px;
           opacity: 0;
           transition: opacity 0.12s ease, transform 0.1s ease;
@@ -372,8 +369,8 @@ export default function PlayerBar() {
           width: 12px;
           height: 12px;
           border-radius: 50%;
-          background: #ffffff;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+          background: #1c1917;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
           border: none;
           opacity: 0;
           transition: opacity 0.12s ease, transform 0.1s ease;

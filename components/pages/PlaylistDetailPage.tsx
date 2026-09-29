@@ -63,12 +63,12 @@ export default function PlaylistDetailPage({ playlistId }: { playlistId: string 
   return (
     <div className='space-y-8'>
       <section className='flex items-center justify-between'>
-        <Link href='/playlists' className='flex items-center gap-2 text-sm text-soft hover:text-lime-300 transition-colors'>
+        <Link href='/playlists' className='flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 transition-colors'>
           <ArrowLeft size={16} /> back to playlists
         </Link>
       </section>
 
-      <section className='grid gap-8 rounded-[2rem] border border-white/10 bg-[#11151d] p-8 md:grid-cols-[280px,1fr] shadow-xl'>
+      <section className='grid gap-8 rounded-3xl border border-slate-200/80 bg-white p-8 md:grid-cols-[280px,1fr] shadow-sm'>
         <div className='relative h-[280px] w-full overflow-hidden rounded-3xl border border-white/10 shadow-2xl flex items-center justify-center'>
           {isFavorites ? (
             <div className='relative flex h-full w-full items-center justify-center bg-gradient-to-br from-rose-500 via-pink-500 to-rose-600'>
@@ -88,10 +88,10 @@ export default function PlaylistDetailPage({ playlistId }: { playlistId: string 
         </div>
 
         <div className='flex flex-col justify-center'>
-          <div className='text-xs uppercase tracking-[0.25em] text-lime-300'>Playlist</div>
-          <h1 className='mt-3 text-5xl font-semibold'>{playlist.name}</h1>
+          <div className='text-xs uppercase tracking-[0.25em] text-slate-500 font-semibold'>Playlist</div>
+          <h1 className='mt-3 text-4xl sm:text-5xl font-bold tracking-tight text-slate-900'>{playlist.name}</h1>
           <div className='mt-6 flex items-center gap-3'>
-            <span className='rounded-full border border-white/10 px-4 py-2 text-xs text-soft'>{items.length} tracks</span>
+            <span className='rounded-full border border-slate-200 px-4 py-2 text-xs text-slate-600 bg-slate-50'>{items.length} tracks</span>
             <button className='rounded-full border border-white/10 px-4 py-2 text-xs hover:bg-white/10'>Add song</button>
           </div>
         </div>
@@ -100,7 +100,7 @@ export default function PlaylistDetailPage({ playlistId }: { playlistId: string 
       <section className='space-y-3'>
         {items.length === 0 && <div className='rounded-3xl border border-dashed border-white/20 p-8 text-soft'>No songs yet</div>}
         {items.map((song) => (
-          <div key={song.id} className='flex items-center justify-between rounded-3xl border border-white/10 bg-[#11151d] px-5 py-4'>
+          <div key={song.id} className='flex items-center justify-between rounded-2xl border border-slate-200/80 bg-white px-5 py-4 shadow-sm'>
             <div className='flex items-center gap-4'>
               <Image
                 src={safeMediaUrl(song.coverImageUrl)}
@@ -110,14 +110,14 @@ export default function PlaylistDetailPage({ playlistId }: { playlistId: string 
                 className='rounded-xl object-cover'
               />
               <div>
-                <div className='font-semibold'>{song.title}</div>
-                <div className='text-xs text-soft'>{song.artist} • {song.album}</div>
+                <div className='font-semibold text-slate-900'>{song.title}</div>
+                <div className='text-xs text-slate-500'>{song.artist} • {song.album}</div>
               </div>
             </div>
             <div className='flex items-center gap-4'>
-              <span className='text-xs text-soft'>{song.genre}</span>
-              <span className='text-xs text-soft'>{Math.floor(song.duration / 60)}:{String(song.duration % 60).padStart(2, '0')}</span>
-              <button onClick={() => handleRemoveSong(song.id)} className='rounded-full p-2 text-soft hover:bg-white/10 hover:text-rose-300'>
+              <span className='text-xs text-slate-500'>{song.genre}</span>
+              <span className='text-xs text-slate-500'>{Math.floor(song.duration / 60)}:{String(song.duration % 60).padStart(2, '0')}</span>
+              <button onClick={() => handleRemoveSong(song.id)} className='rounded-full p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-600'>
                 <Trash2 size={15} />
               </button>
             </div>

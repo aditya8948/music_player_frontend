@@ -1,6 +1,6 @@
 import { Playlist, SearchFilters, Song, PaginatedSongsResponse } from '@/types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://13.206.100.166:9090';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:9090` : 'http://13.204.214.233:9090');
 const DEFAULT_FALLBACK_COVER = '/default_cover.jpg';
 
 /**
@@ -70,6 +70,59 @@ export function safeMediaUrl(url?: string | null, fallback = DEFAULT_FALLBACK_CO
 export function resolveMediaUrl(url?: string | null): string {
   return safeMediaUrl(url, '');
 }
+
+export const VERIFIED_AUDIO_TRACKS = [
+  '/uploads/songs/bolly-diltodke.mp3',
+  '/uploads/songs/bolly-dusbahane.mp3',
+  '/uploads/songs/bolly-taakenaina.mp3',
+  '/uploads/songs/bolly-besharam.mp3',
+  '/uploads/songs/bolly-bhankas.mp3',
+  '/uploads/songs/bolly-channave.mp3',
+  '/uploads/songs/bolly-jwalamukhi.mp3',
+  '/uploads/songs/tum_hi_ho.mp3',
+  '/uploads/songs/bolly-barasbaras.mp3',
+  '/uploads/songs/bolly-terichoriyaan.mp3',
+  '/uploads/songs/bolly-nachannu.mp3',
+  '/uploads/songs/bolly-mahive.mp3',
+  '/uploads/songs/bolly-terenaal.mp3',
+  '/uploads/songs/bolly-khulkejeene.mp3',
+  '/uploads/songs/bolly-carenikarda.mp3',
+  '/uploads/songs/bolly-nayan.mp3'
+];
+
+/**
+ * Returns a deterministic fallback audio URL from verified available tracks
+ */
+export function getFallbackAudioUrl(identifier: string = 'default'): string {
+  let hash = 0;
+  for (let i = 0; i < identifier.length; i++) {
+    hash = (hash << 5) - hash + identifier.charCodeAt(i);
+    hash |= 0;
+  }
+  const index = Math.abs(hash) % VERIFIED_AUDIO_TRACKS.length;
+  return `${API_BASE_URL}${VERIFIED_AUDIO_TRACKS[index]}`;
+}
+
+/**
+ * Safely resolves audio URL for playback with smart fallback
+ */
+export function resolveAudioTrackUrl(url?: string | null, songIdOrTitle: string = 'default'): string {
+  if (!url || typeof url !== 'string') {
+    return getFallbackAudioUrl(songIdOrTitle);
+  }
+  const trimmed = url.trim();
+  if (!trimmed || trimmed.includes('example.com') || trimmed === '#' || trimmed === 'null') {
+    return getFallbackAudioUrl(songIdOrTitle);
+  }
+  if (trimmed.startsWith('/uploads/')) {
+    return `${API_BASE_URL}${trimmed}`;
+  }
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed;
+  }
+  return getFallbackAudioUrl(songIdOrTitle);
+}
+
 
 const inFlightSongs = new Map<string, Promise<PaginatedSongsResponse>>();
 const inFlightPlaylists = new Map<string, Promise<Playlist[]>>();
@@ -152,6 +205,7 @@ export async function getPaginatedSongs({
       if (filters.album) params.set('album', filters.album);
 
       const res = await fetch(`/api/songs?${params.toString()}`, {
+        headers: getAuthHeaders(false),
         cache: 'no-store'
       });
       if (res.ok) {

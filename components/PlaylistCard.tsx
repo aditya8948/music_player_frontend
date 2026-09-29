@@ -16,7 +16,7 @@ export default function PlaylistCard({ playlist }: { playlist: Playlist }) {
   };
 
   return (
-    <article className='group relative rounded-3xl border border-white/10 bg-[#141822] p-4 shadow-lg shadow-black/40 hover:border-white/20 hover:bg-[#181d2a] transition-all duration-300'>
+    <article className='group relative rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm hover:border-slate-300 hover:shadow-md transition-all duration-300'>
       <Link href={`/playlists/${playlist.id}`} className='block'>
         <div className='relative h-44 w-full overflow-hidden rounded-2xl border border-white/10 shadow-inner flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.02]'>
           {isFavorites ? (
@@ -39,10 +39,10 @@ export default function PlaylistCard({ playlist }: { playlist: Playlist }) {
 
       <div className='mt-4 flex items-center justify-between gap-3'>
         <div className='min-w-0'>
-          <Link href={`/playlists/${playlist.id}`} className='truncate block text-base font-bold text-white group-hover:text-lime-300 transition-colors'>
+          <Link href={`/playlists/${playlist.id}`} className='truncate block text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors'>
             {playlist.name}
           </Link>
-          <div className='mt-0.5 text-xs text-soft font-medium'>
+          <div className='mt-0.5 text-xs text-slate-500 font-medium'>
             {playlist.songIds.length} {playlist.songIds.length === 1 ? 'song' : 'songs'}
           </div>
         </div>
@@ -50,7 +50,7 @@ export default function PlaylistCard({ playlist }: { playlist: Playlist }) {
         {playlist.id !== 'playlist-favorites' && (
           <button
             onClick={handleDelete}
-            className='rounded-full p-2 text-soft hover:bg-rose-500/20 hover:text-rose-300 transition-colors'
+            className='rounded-full p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-colors'
             title="Delete Playlist"
           >
             <Trash2 size={16} />

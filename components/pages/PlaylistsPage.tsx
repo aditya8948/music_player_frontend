@@ -46,8 +46,8 @@ export default function PlaylistsPage() {
     <div className='space-y-8'>
       <section className='flex flex-wrap items-end justify-between gap-4'>
         <div>
-          <div className='text-xs uppercase tracking-[0.25em] text-lime-300 font-semibold'>Collections</div>
-          <h1 className='mt-2 text-4xl sm:text-5xl font-extrabold tracking-tight text-white'>Playlists</h1>
+          
+          <h1 className='mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-slate-900'>Playlists</h1>
         </div>
 
         <form onSubmit={handleCreate} className='flex items-center gap-3'>
@@ -55,12 +55,12 @@ export default function PlaylistsPage() {
             value={name} 
             onChange={(event) => setName(event.target.value)} 
             placeholder='New playlist name...' 
-            className='w-64 sm:w-80 rounded-full border border-white/15 bg-[#1a202c] px-5 py-2.5 text-sm text-white placeholder-slate-400 outline-none focus:border-lime-300 focus:ring-1 focus:ring-lime-300' 
+            className='w-64 sm:w-80 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-slate-400 shadow-sm transition' 
           />
           <button 
             type='submit'
             disabled={!name.trim() || loading}
-            className='rounded-full bg-lime-300 px-6 py-2.5 text-sm font-bold text-black inline-flex items-center gap-2 hover:bg-lime-200 transition active:scale-95 disabled:opacity-50 shadow-md'
+            className='rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white inline-flex items-center gap-1.5 hover:bg-slate-800 transition active:scale-95 disabled:opacity-40 shadow-sm'
           >
             <Plus size={16} />
             <span>{loading ? 'Creating...' : 'Create'}</span>

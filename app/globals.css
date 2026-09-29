@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --bg: #0d0f15;
-  --panel: #161b24;
-  --panel-soft: #1e2433;
-  --text: #f3f5f8;
-  --muted: #a3abb8;
-  --line: #262d3d;
-  --green: #b8ff70;
-  --shadow: rgba(0, 0, 0, 0.65);
+  --bg: #f9f8f5;
+  --panel: #ffffff;
+  --panel-soft: #f4f1ea;
+  --text: #1c1917;
+  --muted: #78716c;
+  --line: #e7e4dc;
+  --green: #10b981;
+  --shadow: rgba(40, 30, 20, 0.06);
 }
 
 * {
@@ -27,10 +27,11 @@ body {
   color: var(--text);
   background-color: var(--bg);
   background-image: 
-    radial-gradient(at 15% 15%, rgba(244, 114, 182, 0.12) 0px, transparent 50%),
-    radial-gradient(at 85% 20%, rgba(251, 191, 36, 0.10) 0px, transparent 45%),
-    radial-gradient(at 50% 85%, rgba(139, 92, 246, 0.12) 0px, transparent 50%),
-    radial-gradient(at 85% 85%, rgba(16, 185, 129, 0.08) 0px, transparent 45%);
+    radial-gradient(at 15% 10%, rgba(245, 235, 220, 0.75) 0px, transparent 60%),
+    radial-gradient(at 85% 15%, rgba(250, 240, 228, 0.65) 0px, transparent 55%),
+    radial-gradient(at 50% 60%, rgba(243, 237, 228, 0.7) 0px, transparent 65%),
+    radial-gradient(at 80% 85%, rgba(238, 230, 218, 0.5) 0px, transparent 50%),
+    radial-gradient(at 10% 85%, rgba(245, 238, 225, 0.55) 0px, transparent 55%);
   background-attachment: fixed;
   font-family: Inter, 'Avenir Next', 'Segoe UI', sans-serif;
   overflow-x: hidden;
@@ -39,7 +40,7 @@ body {
 .bg-layer {
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(120, 110, 95, 0.04) 1px, transparent 1px);
   background-size: 32px 32px;
   pointer-events: none;
   z-index: 0;
@@ -51,7 +52,7 @@ body {
   left: -100px;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(236, 72, 153, 0.18) 0%, rgba(244, 63, 94, 0.06) 50%, transparent 70%);
+  background: radial-gradient(circle, rgba(245, 235, 215, 0.55) 0%, rgba(255, 255, 255, 0) 70%);
   filter: blur(80px);
   border-radius: 9999px;
   pointer-events: none;
@@ -65,7 +66,7 @@ body {
   right: -150px;
   width: 650px;
   height: 650px;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(234, 88, 12, 0.05) 50%, transparent 70%);
+  background: radial-gradient(circle, rgba(240, 230, 210, 0.45) 0%, rgba(255, 255, 255, 0) 70%);
   filter: blur(90px);
   border-radius: 9999px;
   pointer-events: none;
@@ -79,7 +80,7 @@ body {
   left: 30%;
   width: 700px;
   height: 700px;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.14) 0%, rgba(59, 130, 246, 0.05) 50%, transparent 70%);
+  background: radial-gradient(circle, rgba(235, 225, 205, 0.35) 0%, rgba(255, 255, 255, 0) 70%);
   filter: blur(100px);
   border-radius: 9999px;
   pointer-events: none;
@@ -95,7 +96,7 @@ body {
 }
 
 .main-content {
-  padding: 90px 32px 140px;
+  padding: 85px 32px 140px;
   max-width: 1500px;
   margin: 0 auto;
 }
@@ -105,21 +106,18 @@ body {
   inset: 0;
   width: 100vw;
   height: 100vh;
-  background-image: url('/login-bg.jpg');
-  background-size: cover;
-  background-position: center;
+  background: var(--bg);
+  background-image: 
+    radial-gradient(at 15% 10%, rgba(245, 235, 220, 0.85) 0px, transparent 60%),
+    radial-gradient(at 85% 15%, rgba(250, 240, 228, 0.75) 0px, transparent 55%),
+    radial-gradient(at 50% 60%, rgba(243, 237, 228, 0.8) 0px, transparent 65%),
+    radial-gradient(at 80% 85%, rgba(238, 230, 218, 0.6) 0px, transparent 50%),
+    radial-gradient(at 10% 85%, rgba(245, 238, 225, 0.65) 0px, transparent 55%);
   z-index: 0;
-  filter: brightness(0.7) saturate(0.85);
 }
 
 .auth-bg-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(13, 15, 21, 0.35) 0%,
-    rgba(13, 15, 21, 0.7) 100%
-  );
+  display: none;
 }
 
 .main-content-auth {
@@ -240,7 +238,7 @@ body {
 
 @media (max-width: 800px) {
   .main-content {
-    padding: 80px 16px 160px;
+    padding: 75px 16px 160px;
   }
 }
 
@@ -264,6 +262,6 @@ button {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--line);
+  background: #d6d1c4;
   border-radius: 6px;
 }
