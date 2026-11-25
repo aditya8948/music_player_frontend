@@ -32,7 +32,7 @@ import { User } from '@/types';
 
 const ZITADEL_ISSUER = process.env.NEXT_PUBLIC_ZITADEL_ISSUER || 'https://musekit-oua2yk.us1.zitadel.cloud';
 const CLIENT_ID = process.env.NEXT_PUBLIC_ZITADEL_CLIENT_ID || '389546719580380515';
-const GATEWAY_URL = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:9090` : 'http://13.204.214.233:9090');
+const GATEWAY_URL = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:9090` : 'http://localhost:9090');
 
 let userManagerInstance: UserManager | null = null;
 let inFlightCallbackPromise: Promise<User | null> | null = null;
@@ -182,6 +182,7 @@ export async function handleSignupCallback(): Promise<boolean> {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
+      signal: AbortSignal.timeout(5000),
       body: JSON.stringify({
         email: fallbackUser.email,
         name: fallbackUser.name
@@ -260,6 +261,7 @@ export async function handleAuthCallback(): Promise<User | null> {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
+        signal: AbortSignal.timeout(5000),
         body: JSON.stringify({
           email: fallbackUser.email,
           name: fallbackUser.name

@@ -27,23 +27,10 @@ export interface User {
   name: string;
 }
 
-export interface AuthState {
-  user: User | null;
-  isAuthenticated: boolean;
-}
-
 export interface SearchFilters {
   genre?: string;
   artist?: string;
   album?: string;
-}
-
-export interface PlayerState {
-  currentSongId: string | null;
-  isPlaying: boolean;
-  volume: number;
-  progress: number;
-  duration: number;
 }
 
 export interface PaginatedSongsResponse {

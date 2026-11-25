@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://13.204.214.233:9090';
-
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
+  const host = request.headers.get('host')?.split(':')[0] || 'localhost';
+  const protocol = request.nextUrl.protocol || 'http:';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || `${protocol}//${host}:9090`;
   const { searchParams } = new URL(request.url);
   const authHeader = request.headers.get('authorization');
   const userEmail = request.headers.get('x-user-email');

@@ -1,6 +1,6 @@
 import { Playlist, SearchFilters, Song, PaginatedSongsResponse } from '@/types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:9090` : 'http://13.204.214.233:9090');
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:9090` : 'http://localhost:9090');
 const DEFAULT_FALLBACK_COVER = '/default_cover.jpg';
 
 /**
@@ -37,20 +37,7 @@ function getAuthHeaders(includeContentType = true): HeadersInit {
 }
 
 /**
- * Checks whether a given media URL is syntactically valid for Next Image loaders
- */
-export function isValidMediaUrl(url?: string | null): boolean {
-  if (!url || typeof url !== 'string') return false;
-  const trimmed = url.trim();
-  return (
-    trimmed.startsWith('http://') ||
-    trimmed.startsWith('https://') ||
-    trimmed.startsWith('/')
-  );
-}
-
-/**
- * Safely resolves media URLs and falls back to a guaranteed valid Unsplash image
+ * Safely resolves media URLs and falls back to a guaranteed valid cover image
  * if the string is empty, null, undefined, or an invalid format
  */
 export function safeMediaUrl(url?: string | null, fallback = DEFAULT_FALLBACK_COVER): string {
@@ -65,10 +52,6 @@ export function safeMediaUrl(url?: string | null, fallback = DEFAULT_FALLBACK_CO
     return trimmed;
   }
   return fallback;
-}
-
-export function resolveMediaUrl(url?: string | null): string {
-  return safeMediaUrl(url, '');
 }
 
 export const VERIFIED_AUDIO_TRACKS = [
@@ -242,75 +225,6 @@ export async function getPaginatedSongs({
 }
 
 /**
- * Fetch a single song by ID from backend
- */
-export async function getSongById(id: string): Promise<Song | null> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('auth-token') : null;
-  if (!token) return null;
-
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/songs/${id}`, {
-      headers: getAuthHeaders(false),
-      cache: 'no-store'
-    });
-    if (res.ok) {
-      return await res.json();
-    }
-  } catch (error) {
-    console.warn(`Failed to fetch song ${id} from backend:`, error);
-  }
-  return null;
-}
-
-/**
- * Fetch available genres from backend
- */
-export async function getGenres(): Promise<string[]> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('auth-token') : null;
-  if (!token) return [];
-
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/songs/genres`, {
-      headers: getAuthHeaders(false),
-      cache: 'no-store'
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) {
-        return data;
-      }
-    }
-  } catch (error) {
-    console.warn('Failed to fetch genres from backend:', error);
-  }
-  return [];
-}
-
-/**
- * Upload a song to the backend (multipart/form-data)
- */
-export async function uploadSong(formData: FormData): Promise<Song> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('auth-token') : null;
-  const headers: HeadersInit = {};
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  const res = await fetch(`${API_BASE_URL}/api/songs/upload`, {
-    method: 'POST',
-    headers,
-    body: formData
-  });
-
-  if (!res.ok) {
-    const errData = await res.json().catch(() => ({}));
-    throw new Error(errData.message || 'Song upload failed');
-  }
-
-  return await res.json();
-}
-
-/**
  * Get direct download URL for a song
  */
 export function getDownloadUrl(songId: string): string {
@@ -319,13 +233,6 @@ export function getDownloadUrl(songId: string): string {
 
 export async function getSongs(): Promise<Song[]> {
   const result = await getPaginatedSongs({ page: 1, limit: 100 });
-  return result.songs;
-}
-
-export async function searchSongs(query = '', filters: SearchFilters = {}): Promise<Song[]> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('auth-token') : null;
-  if (!token) return [];
-  const result = await getPaginatedSongs({ page: 1, limit: 100, query, filters });
   return result.songs;
 }
 

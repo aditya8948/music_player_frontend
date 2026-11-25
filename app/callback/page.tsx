@@ -1,20 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { handleAuthCallback, handleSignupCallback, getAuthIntent } from "@/lib/auth/zitadelAuth";
 import { useMusicStore } from "@/lib/store/useMusicStore";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
 
-let callbackExecuted = false;
-
 export default function CallbackPage() {
   const { setAuthUser } = useMusicStore();
   const [error, setError] = useState<string | null>(null);
+  const callbackExecuted = useRef(false);
 
   useEffect(() => {
-    if (callbackExecuted) return;
-    callbackExecuted = true;
+    if (callbackExecuted.current) return;
+    callbackExecuted.current = true;
 
     async function processCallback() {
       const intent = getAuthIntent();
